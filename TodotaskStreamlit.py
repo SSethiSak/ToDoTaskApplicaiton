@@ -1,5 +1,4 @@
-# Import necessary libraries
-import streamlit as st
+import TodotaskStreamlit as st
 
 # Define a Node class for the linked list
 class Node:
@@ -14,8 +13,13 @@ class LinkedList:
 
     def add_task(self, task):
         new_node = Node(task)
-        new_node.next = self.head
-        self.head = new_node
+        if self.head is None:
+            self.head = new_node
+        else:
+            current = self.head
+            while current.next:
+                current = current.next
+            current.next = new_node
 
     def remove_task(self, task):
         current = self.head
@@ -41,12 +45,14 @@ class LinkedList:
 
         return tasks
 
-# Create a Streamlit app
 def main():
-    st.title("To-Do List App with Linked List")
+    # Create or retrieve the tasks_list from session state
+    if 'tasks_list' not in st.session_state:
+        st.session_state.tasks_list = LinkedList()
 
-    # Initialize a linked list
-    tasks_list = LinkedList()
+    tasks_list = st.session_state.tasks_list
+
+    st.title("To-Do List App with Linked List")
 
     # Sidebar for adding tasks
     task_input = st.sidebar.text_input("Add Task:")
@@ -63,7 +69,7 @@ def main():
     # Main content to display tasks
     st.write("## Your To-Do List:")
     tasks = tasks_list.display_tasks()
-
+    
     if not tasks:
         st.write("No tasks yet. Add some tasks using the sidebar!")
 
